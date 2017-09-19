@@ -50,15 +50,16 @@ class MenuBuilder
         /** @var MenuItem[] $items */
         $items = $entity->getItems();
         foreach ($items as $item) {
-            $options = ['linkAttributes'=>['class'=>'ajax']];
+            $options = ['linkAttributes' => ['class' => 'item']];
             if ($item->getUseCustomUrl()) {
                 $options['uri'] = $item->getUrl();
             } else {
                 $options['route'] = $item->getRouteName();
-                $parameters = @json_decode($item->getRouteParameters(),true);
+                $parameters = @json_decode($item->getRouteParameters(), true);
                 if (!empty($parameters) && is_array($parameters)) {
                     $options['routeParameters'] = $parameters;
                 }
+                $options['linkAttributes']['class'] = 'item ajax';
             }
             $target = $item->getTarget();
             if (!empty($target)) {
