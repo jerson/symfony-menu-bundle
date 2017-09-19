@@ -1,0 +1,146 @@
+{% block name_widget %}
+    {{ value | trans }}
+    <div style="display: none">
+        {% spaceless %}
+            {{ block('form_widget') }}
+        {% endspaceless %}
+    </div>
+{% endblock %}
+
+{% block route_name_label %}
+{% endblock %}
+{% block route_name_widget %}
+
+    {% set key =  id | replace({'_routeName':''}) %}
+    {% set urlId = key ~  '_url' %}
+    {% set routeNameId = key ~  '_routeName' %}
+    {% set routeParametersId = key~  '_routeParameters' %}
+    {% set useCustomUrlId = key ~  '_useCustomUrl' %}
+
+    {% set tmpUrlId = urlId ~ 'tmp' %}
+    {% set tmpRouteNameId = routeNameId  ~ 'tmp' %}
+    {% set tmpRouteParametersId = routeParametersId  ~ 'tmp' %}
+
+    <div id="{{ key }}_default_container">
+        <select class="form-control" id="{{ tmpRouteNameId }}">
+            {% for choice in choices %}
+                <option {% if choice.value==value %} selected {% endif %} data-label="{{ choice.label }}"
+                                                                          value="{{ choice.value }}">{{ choice.label | trans }}</option>
+            {% endfor %}
+        </select>
+
+        <div id="{{ tmpRouteParametersId }}">
+
+        </div>
+    </div>
+
+    <div id="{{ key }}_custom_url_container" style="display: none">
+        <input type="text" class="form-control" id="{{ tmpUrlId }}"/>
+    </div>
+
+    <script>
+        $(function () {
+
+            var regex = /\{([a-zA-Z0-9_\-]+)\}/g;
+
+            $('#{{ useCustomUrlId }}').on('onchange', function (event) {
+                var isChecked = $(this).is(':checked');
+
+                if (isChecked) {
+                    $('#{{ key }}_custom_url_container').show();
+                    $('#{{ key }}_default_container').hide();
+                } else {
+                    $('#{{ key }}_custom_url_container').hide();
+                    $('#{{ key }}_default_container').show();
+                }
+            });
+
+            $('#{{ useCustomUrlId }}').on('ifChanged', function (event) {
+                $(this).trigger('onchange');
+            });
+
+            $('#{{ tmpUrlId }}').on('change', function () {
+                $('#{{ urlId }}').val($(this).val());
+            });
+
+            $('#{{ tmpRouteNameId }}').on('change', function () {
+                $('#{{ routeNameId }}').val($(this).val());
+                var parametersVal = $('#{{ routeParametersId }}').val();
+                var route = $('#{{ tmpRouteNameId }} option:selected').data('label');
+                var parametersData = {};
+                try {
+                    if (parametersVal) {
+                        parametersData = JSON.parse(parametersVal);
+                    }
+                    var keys = Object.keys(parametersData);
+                    for (var i = 0; i < keys.length; i++) {
+                        var key =  keys[i];
+                        if (route.indexOf('{' + key + '}') === -1) {
+                            delete parametersData[key];
+                        }
+                    }
+                    $('#{{ routeParametersId }}').val(JSON.stringify(parametersData));
+                } catch (e) {
+                    console.log(e, parametersVal);
+                }
+
+                var result = null;
+                $('#{{ tmpRouteParametersId }}').empty();
+                while (result = regex.exec(route)) {
+                    if (result[1]) {
+                        var param = result[1];
+                        var value = parametersData[param] || '';
+
+                        var input = document.createElement('input');
+                        input.onkeyup = function () {
+                            var value = $(this).val();
+                            var name = $(this).data('name');
+                            var parametersVal = $('#{{ routeParametersId }}').val();
+                            var parametersData = {};
+                            try {
+                                if (parametersVal) {
+                                    parametersData = JSON.parse(parametersVal);
+                                }
+                                var keys = Object.keys(parametersData);
+                                for (var i = 0; i < keys.length; i++) {
+                                    var key =  keys[i];
+                                    if (route.indexOf('{' + key + '}') === -1) {
+                                        delete parametersData[key];
+                                    }
+                                }
+                            } catch (e) {
+                                console.log(e, parametersVal);
+                            }
+                            parametersData[name] = value;
+                            console.log(name, 'parametersData', parametersData);
+                            $('#{{ routeParametersId }}').val(JSON.stringify(parametersData));
+                        };
+                        input.setAttribute('data-name', param);
+                        input.placeholder = param;
+                        input.value = value;
+                        input.required = true;
+                        input.className = 'form-control';
+                        $('#{{ tmpRouteParametersId }}').append(input);
+
+                    }
+                }
+
+
+            });
+
+            $('#{{ tmpUrlId }}').val($('#{{ urlId }}').val());
+            $('#{{ tmpRouteNameId }}').val($('#{{ routeNameId }}').val());
+
+            $('#{{ useCustomUrlId }}').trigger('change');
+            $('#{{ tmpRouteNameId }}').trigger('change');
+
+
+        })
+    </script>
+
+    <div style="display: none">
+        {% spaceless %}
+            {{ block('form_widget') }}
+        {% endspaceless %}
+    </div>
+{% endblock %}

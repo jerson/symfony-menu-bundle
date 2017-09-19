@@ -1,0 +1,10 @@
+services:
+    menu.routers.service:
+         class: MenuBundle\Services\RoutersService
+         arguments: [ "@routing.loader","%menu.router%"]
+
+    menu.type.route_name:
+        class: MenuBundle\Form\Type\RouteNameType
+        arguments: [ "@menu.routers.service"]
+        tags:
+            - { name: form.type }
