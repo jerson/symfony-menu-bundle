@@ -46,9 +46,9 @@
 
                 <li
                         {% if menuItem.childrens %}
-                            class="{{ liClass }} {{ subMenuClass }} {{ url == menuItem.item.url ? liActiveClass : '' }}"
+                            class="{{ liClass }} {{ subMenuClass }} {{ currentUrl == menuItem.item.url ? liActiveClass : '' }}"
                         {% else %}
-                            class="{{ liClass }} {{ url == menuItem.item.url ? liActiveClass : '' }}"
+                            class="{{ liClass }} {{ currentUrl == menuItem.item.url ? liActiveClass : '' }}"
                         {% endif %}
                 >
 
@@ -72,7 +72,7 @@
                     {% if menuItem.childrens %}
                         <ul>
                             {% for children in menuItem.childrens %}
-                                <li class="{{ liClass }} {{ url == children.url ? liActiveClass : '' }}">
+                                <li class="{{ liClass }} {{ currentUrl == children.url ? liActiveClass : '' }}">
                                     <a
                                             href="{{ children.url }}"
                                             {% if children.target is not empty %}

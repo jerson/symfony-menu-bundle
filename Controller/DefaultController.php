@@ -16,7 +16,7 @@ class DefaultController extends Controller
      * @param array $options
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function renderAction($name, $url, $options = [])
+    public function renderAction($name, $currentUrl, $options = [])
     {
 
         /** @var MenuRepository $repository */
@@ -48,10 +48,12 @@ class DefaultController extends Controller
             }
         }
 
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $currentUrl = str_replace($request->getSchemeAndHttpHost() . $request->getBaseUrl(), '', $currentUrl);
 
         return $this->render('@Menu/Default/render.html.twig', [
             'options' => $options,
-            'url' => $url,
+            'currentUrl' => $currentUrl,
             'menuItems' => $menuItems,
             'name' => $name
         ]);
