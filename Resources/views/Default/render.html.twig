@@ -1,0 +1,96 @@
+{% spaceless %}
+
+    {% set ulClass = '' %}
+    {% if options.ulClass is defined %}
+        {% set ulClass = options.ulClass %}
+    {% endif %}
+
+    {% set liClass = '' %}
+    {% if options.liClass is defined %}
+        {% set liClass = options.liClass %}
+    {% endif %}
+
+    {% set linkClass = '' %}
+    {% if options.linkClass is defined %}
+        {% set linkClass = options.linkClass %}
+    {% endif %}
+
+    {% set linkRouteClass = '' %}
+    {% if options.linkRouteClass is defined %}
+        {% set linkRouteClass = options.linkRouteClass %}
+    {% endif %}
+
+    {% set liActiveClass = 'active' %}
+    {% if options.currentClass is defined %}
+        {% set liActiveClass = options.currentClass %}
+    {% endif %}
+
+    {% set subMenuClass = '' %}
+    {% if options.subMenuClass is defined %}
+        {% set subMenuClass = options.subMenuClass %}
+    {% endif %}
+
+
+    {% if not menuItems %}
+        <ul class="{{ ulClass }}">
+            {% set error = '<strong>'~name~'</strong>' %}
+            <li class="{{ liClass }}"><a
+                        href="#">{{ 'must create %name% menu' | trans({'%name%':'error'}) | raw }}</a></li>
+        </ul>
+    {% else %}
+
+
+        <ul class="{{ ulClass }}">
+
+            {% for menuItem in menuItems %}
+
+                <li
+                        {% if menuItem.childrens %}
+                            class="{{ liClass }} {{ subMenuClass }} {{ url == menuItem.item.url ? liActiveClass : '' }}"
+                        {% else %}
+                            class="{{ liClass }} {{ url == menuItem.item.url ? liActiveClass : '' }}"
+                        {% endif %}
+                >
+
+                    <a
+                            {% if menuItem.childrens %}
+                                href="{{ menuItem.item.url }}"
+                            {% else %}
+                                href="{{ menuItem.item.url }}"
+                            {% endif %}
+                            {% if menuItem.item.target is not empty %}
+                                target="{{ menuItem.item.target }}"
+                            {% endif %}
+                            class="{{ menuItem.item.useCustomUrl ? '' : linkRouteClass }}"
+                    >
+
+                        {{ menuItem.item.name | trans }}
+                        {# {% if menuItem.childrens %}
+                             <span class="caret"> </span>
+                         {% endif %}#}
+                    </a>
+                    {% if menuItem.childrens %}
+                        <ul>
+                            {% for children in menuItem.childrens %}
+                                <li class="{{ liClass }} {{ url == children.url ? liActiveClass : '' }}">
+                                    <a
+                                            href="{{ children.url }}"
+                                            {% if children.target is not empty %}
+                                                target="{{ children.target }}"
+                                            {% endif %}
+                                            class="{{ menuItem.item.useCustomUrl ? '' : linkRouteClass }}"
+                                    >
+                                        {{ children.name | trans }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+
+
+
+    {% endif %}
+{% endspaceless %}

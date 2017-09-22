@@ -1,10 +1,16 @@
 {% block name_widget %}
-    {{ value | trans }}
-    <div style="display: none">
+    {% if value is empty %}
         {% spaceless %}
             {{ block('form_widget') }}
         {% endspaceless %}
-    </div>
+    {% else %}
+        {{ value | trans }}
+        <div style="display: none">
+            {% spaceless %}
+                {{ block('form_widget') }}
+            {% endspaceless %}
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block route_name_label %}
@@ -74,7 +80,7 @@
                     }
                     var keys = Object.keys(parametersData);
                     for (var i = 0; i < keys.length; i++) {
-                        var key =  keys[i];
+                        var key = keys[i];
                         if (route.indexOf('{' + key + '}') === -1) {
                             delete parametersData[key];
                         }
@@ -103,7 +109,7 @@
                                 }
                                 var keys = Object.keys(parametersData);
                                 for (var i = 0; i < keys.length; i++) {
-                                    var key =  keys[i];
+                                    var key = keys[i];
                                     if (route.indexOf('{' + key + '}') === -1) {
                                         delete parametersData[key];
                                     }

@@ -26,31 +26,45 @@ class MenuBuilder
 
     public function createDefaultMenu(array $options)
     {
-        $menu = $this->factory->createItem('root');
+        $ulClass = isset($options['ulClass']) ? $options['ulClass'] : '';
+        $menu = $this->factory->createItem('root', [
+            'childrenAttributes' => ['class' => $ulClass],
+        ]);
 
         $name = 'default';
         if (!empty($options)) {
             $name = isset($options['name']) ? $options['name'] : $name;
+            unset($options['name']);
         }
 
-        return $this->getDefaultMenu($menu, $name);
+        return $this->getDefaultMenu($menu, $name, $options);
     }
 
-    protected function getDefaultMenu(ItemInterface $menu, $name)
+    protected function getDefaultMenu(ItemInterface $menu, $name, $options = [])
     {
 
         /** @var MenuRepository $repository */
         $repository = $this->em->getRepository('MenuBundle:Menu');
         $entity = $repository->findOneByName($name);
 
+        $liClass = isset($options['liClass']) ? $options['liClass'] : '';
+        $linkClass = isset($options['linkClass']) ? $options['linkClass'] : '';
+        $linkRouteClass = isset($options['linkRouteClass']) ? $options['linkRouteClass'] : '';
+
         if ($entity === null) {
-            $menu->addChild('Home', ['uri' => '#home']);
+            $menu->addChild('Home', [
+                'uri' => '#home',
+                'linkAttributes' => ['class' => $linkClass],
+                'attributes' => ['class' => $liClass],
+            ]);
             return $menu;
         }
+
+
         /** @var MenuItem[] $items */
         $items = $entity->getItems();
         foreach ($items as $item) {
-            $options = ['linkAttributes' => ['class' => 'item']];
+            $options = ['linkAttributes' => ['class' => $linkClass]];
             if ($item->getUseCustomUrl()) {
                 $options['uri'] = $item->getUrl();
             } else {
@@ -59,11 +73,15 @@ class MenuBuilder
                 if (!empty($parameters) && is_array($parameters)) {
                     $options['routeParameters'] = $parameters;
                 }
-                $options['linkAttributes']['class'] = 'item ajax';
+                $options['linkAttributes']['class'] = $linkClass . ' ' . $linkRouteClass;
             }
             $target = $item->getTarget();
             if (!empty($target)) {
                 $options['linkAttributes']['target'] = $target;
+            }
+
+            if (!empty($liClass)) {
+                $options['attributes']['class'] = $liClass;
             }
 
             $menu->addChild($item->getName(), $options);
