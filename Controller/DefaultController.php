@@ -12,7 +12,7 @@ class DefaultController extends Controller
 
     /**
      * @param $name
-     * @param $url
+     * @param $currentUrl
      * @param array $options
      * @return \Symfony\Component\HttpFoundation\Response
      */
