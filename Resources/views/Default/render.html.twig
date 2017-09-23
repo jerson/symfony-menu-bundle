@@ -34,8 +34,11 @@
     {% if not menuItems %}
         <ul class="{{ ulClass }}">
             {% set error = '<strong>'~name~'</strong>' %}
-            <li class="{{ liClass }}"><a
-                        href="#">{{ 'must create %name% menu' | trans({'%name%':'error'}) | raw }}</a></li>
+            <li class="{{ liClass }}">
+                <a class="{{ linkClass }}" href="#">
+                    {{ 'must create %name% menu' | trans({'%name%':'error'}) | raw }}
+                </a>
+            </li>
         </ul>
     {% else %}
 
@@ -61,7 +64,7 @@
                             {% if menuItem.item.target is not empty %}
                                 target="{{ menuItem.item.target }}"
                             {% endif %}
-                            class="{{ menuItem.item.useCustomUrl ? '' : linkRouteClass }}"
+                            class="{{ linkClass }} {{ menuItem.item.useCustomUrl ? '' : linkRouteClass }}"
                     >
 
                         {{ menuItem.item.name | trans }}
@@ -78,7 +81,7 @@
                                             {% if children.target is not empty %}
                                                 target="{{ children.target }}"
                                             {% endif %}
-                                            class="{{ menuItem.item.useCustomUrl ? '' : linkRouteClass }}"
+                                            class="{{ linkClass }} {{ menuItem.item.useCustomUrl ? '' : linkRouteClass }}"
                                     >
                                         {{ children.name | trans }}
                                     </a>

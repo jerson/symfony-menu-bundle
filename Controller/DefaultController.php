@@ -27,13 +27,13 @@ class DefaultController extends Controller
         $lastParent = null;
 
         /** @var MenuItem[] $items */
-        $items = $entity->getItems();
+        $items = !empty($entity) ? $entity->getItems() : [];
 
         foreach ($items as $item) {
 
             if (!$item->getUseCustomUrl()) {
                 $parameters = @json_decode($item->getRouteParameters(), true);
-                $url = $this->generateUrl($item->getRouteName(), $parameters);
+                $url = $this->generateUrl($item->getRouteName(), !empty($parameters) && is_array($parameters) ? $parameters : []);
                 $item->setUrl($url);
             }
             $parent = $item->getParent();
